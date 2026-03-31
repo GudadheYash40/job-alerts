@@ -1,0 +1,54 @@
+{
+  "organisations": [
+    {
+      "name": "jpmc",
+      "type": "api",
+      "url": "https://jpmc.fa.oraclecloud.com/hcmRestApi/resources/latest/recruitingCEJobRequisitions?onlyData=true&expand=requisitionList.workLocation,requisitionList.otherWorkLocations,requisitionList.secondaryLocations,flexFieldsFacet.values,requisitionList.requisitionFlexFields&finder=findReqs;siteNumber=CX_1001,facetsList=LOCATIONS%3BWORK_LOCATIONS%3BWORKPLACE_TYPES%3BTITLES%3BCATEGORIES%3BORGANIZATIONS%3BPOSTING_DATES%3BFLEX_FIELDS,limit=25,lastSelectedFacet=CATEGORIES,locationId=300000000289360,selectedCategoriesFacet=300000086152753%3B300000086250134%3B300000086144371%3B300000086144003%3B300000086249821%3B300049451194835,sortBy=POSTING_DATES_DESC"
+    },
+    {
+      "name": "morganstanley",
+      "type": "api",
+      "url": "https://morganstanley.eightfold.ai/api/pcsx/search?domain=morganstanley.com&query=&location=&sort_by=timestamp&filter_businessarea=technology&filter_businessarea=technology+and+operations&filter_country=India"
+    },
+    {
+      "name": "cisco",
+      "type": "api",
+      "url": "https://careers.cisco.com"
+    },
+    {
+      "name": "goldmansachs",
+      "type": "api",
+      "url": "https://api-higher.gs.com/gateway/api/v1/graphql"
+    },
+    {
+      "name": "adobe",
+      "type": "api",
+      "url": "https://careers.adobe.com/widgets"
+    },
+    {
+      "name": "mastercard",
+      "type": "api",
+      "url": "https://mastercard.wd1.myworkdayjobs.com/wday/cxs/mastercard/CorporateCareers/jobs"
+    },
+    {
+      "name": "amazon",
+      "type": "api",
+      "url": "https://www.amazon.jobs/en/search.json?category%5B%5D=software-development&category%5B%5D=operations-it-support-engineering&normalized_country_code%5B%5D=IND&radius=24km&facets%5B%5D=normalized_country_code&facets%5B%5D=normalized_state_name&facets%5B%5D=normalized_city_name&facets%5B%5D=location&facets%5B%5D=business_category&facets%5B%5D=category&facets%5B%5D=schedule_type_id&facets%5B%5D=employee_class&facets%5B%5D=normalized_location&facets%5B%5D=job_function_id&facets%5B%5D=is_manager&facets%5B%5D=is_intern&&result_limit=10&sort=recent&latitude=&longitude=&loc_group_id=&loc_query=India&base_query=&city=&country=IND&region=&county=&query_options=&"
+    },
+    {
+      "name": "workday",
+      "type": "api",
+      "url": "https://workday.wd5.myworkdayjobs.com/wday/cxs/workday/Workday/jobs"
+    },
+    {
+      "name": "deepintent",
+      "type": "api",
+      "url": "https://job-boards.greenhouse.io/embed/job_board?for=deepintent&validityToken=icGxx43M1HJpWg74kvoWjPYvE0JZHq1dTguiYD3bE1661sVjjZzAdiL5DAMPpcFTPj87UHFFBDJnAbLI6huOInCj3q6obWQi62rPDJfh0Wb4i86tOjmTGsaF5_WTU_iuq2aEAqACtjVP9nDmgEehuGskN_n_79HE8AB-U2biSuNEp4r7qB14iEL7aYan6iWuhRRZuT5qxuzq51ilee9RAAInGpSl45yqWaxbXwifMnnDlUbkfZ3u8MO9yAjpRKHkhBK5E9XId-9t7-Zquw-1v221Is2rZs6lhsWC92SwhS7q6x4wbFZJs5Hzpb89XlTWb2Gj4zaRVGLuc2qQI8bFeQ%3D%3D&departments%5B%5D=4049133004&offices%5B%5D=4028851004&_data=routes%2Fembed.job_board"
+    },
+    {
+      "name": "microsoft",
+      "type": "api",
+      "url": "https://apply.careers.microsoft.com/api/pcsx/search?domain=microsoft.com&query=&location=India&filter_profession=software+engineering&filter_profession=research%252C%2520applied%252C%2520%2526%2520data%2520sciences&filter_profession=technical+support&filter_profession=security+engineering&filter_profession=technology+sales&sort_by=timestamp"
+    }
+  ]
+}
