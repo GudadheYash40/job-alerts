@@ -67,6 +67,7 @@ function isEntryLevel(job) {
     const pureEngineeringBlock = [
         "software engineer",
         "software developer",
+        "engineer",
         "swe ",
         "(swe)",
         "backend engineer",
