@@ -10,13 +10,20 @@ function getFilePath(company) {
     return path.join(__dirname, "../data", `${company}.json`);
 }
 
-// Load state for a company
+// Load state
 async function loadState(company) {
     try {
         const filePath = getFilePath(company);
         await ensureDirExists(path.dirname(filePath));
         const data = await fs.readFile(filePath, "utf-8");
-        return JSON.parse(data);
+        const parsed = JSON.parse(data);
+
+        // Migrate old object format { id, seenAt } → plain string IDs
+        parsed.seen_ids = parsed.seen_ids.map(entry =>
+            typeof entry === "object" ? String(entry.id) : String(entry)
+        );
+
+        return parsed;
     } catch (err) {
         return { seen_ids: [] };
     }
@@ -29,25 +36,20 @@ async function saveState(company, state) {
     await fs.writeFile(filePath, JSON.stringify(state, null, 2), "utf-8");
 }
 
-// Always store IDs as strings — fixes repeat job bug
+// Merge new IDs into existing — plain strings only
 function updateSeenIds(oldIds, newIds, limit = 500) {
-    // Normalize everything to strings
-    const normalizedOld = oldIds.map(id => String(id));
-    const normalizedNew = newIds.map(id => String(id));
-
-    const combined = [...normalizedNew, ...normalizedOld];
-    const unique = Array.from(new Set(combined));
-    return unique.slice(0, limit);
+    const normalized = [
+        ...newIds.map(id => String(id)),
+        ...oldIds.map(id => typeof id === "object" ? String(id.id) : String(id))
+    ];
+    return Array.from(new Set(normalized)).slice(0, limit);
 }
 
-// Build a Set of string IDs for comparison
+// Build a Set for fast lookup
 function buildSeenSet(seenIds) {
-    return new Set(seenIds.map(id => String(id)));
+    return new Set(seenIds.map(id =>
+        typeof id === "object" ? String(id.id) : String(id)
+    ));
 }
 
-module.exports = {
-    loadState,
-    saveState,
-    updateSeenIds,
-    buildSeenSet,
-};
+module.exports = { loadState, saveState, updateSeenIds, buildSeenSet };
