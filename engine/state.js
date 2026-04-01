@@ -1,42 +1,35 @@
 // engine/state.js
-const fs = require("fs/promises");
-const path = require("path");
+// Uses Upstash Redis to store seen IDs permanently
+// Survives Render restarts, deploys, and sleep cycles
 
-async function ensureDirExists(dirPath) {
-    await fs.mkdir(dirPath, { recursive: true });
-}
+const { Redis } = require("@upstash/redis");
 
-function getFilePath(company) {
-    return path.join(__dirname, "../data", `${company}.json`);
-}
+const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
-// Load state
+// Load seen IDs for a company from Redis
 async function loadState(company) {
     try {
-        const filePath = getFilePath(company);
-        await ensureDirExists(path.dirname(filePath));
-        const data = await fs.readFile(filePath, "utf-8");
-        const parsed = JSON.parse(data);
-
-        // Migrate old object format { id, seenAt } → plain string IDs
-        parsed.seen_ids = parsed.seen_ids.map(entry =>
-            typeof entry === "object" ? String(entry.id) : String(entry)
-        );
-
-        return parsed;
+        const ids = await redis.get(`seen_ids:${company}`);
+        return { seen_ids: ids || [] };
     } catch (err) {
+        console.error(`Redis loadState error (${company}):`, err.message);
         return { seen_ids: [] };
     }
 }
 
-// Save state
+// Save seen IDs for a company to Redis
 async function saveState(company, state) {
-    const filePath = getFilePath(company);
-    await ensureDirExists(path.dirname(filePath));
-    await fs.writeFile(filePath, JSON.stringify(state, null, 2), "utf-8");
+    try {
+        await redis.set(`seen_ids:${company}`, state.seen_ids);
+    } catch (err) {
+        console.error(`Redis saveState error (${company}):`, err.message);
+    }
 }
 
-// Merge new IDs into existing — plain strings only
+// Merge new IDs into old — plain strings, deduped, capped at 500
 function updateSeenIds(oldIds, newIds, limit = 500) {
     const normalized = [
         ...newIds.map(id => String(id)),
