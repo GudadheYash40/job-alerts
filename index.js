@@ -106,7 +106,7 @@ async function processCompany(org) {
         }
 
         // Update state
-        const newIds = jobs.map(j => j.id);
+        const newIds = newJobs.map(j => j.id);
         state.seen_ids = updateSeenIds(state.seen_ids, newIds);
 
         await saveState(name, state);
