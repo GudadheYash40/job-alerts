@@ -51,7 +51,7 @@
       "url": "https://jobs.standardchartered.com/services/recruiting/v1/jobs"
     },   
    {
-      "name": "citibank",
+      "name": "citi",
       "type": "api",
       "url": " https://jobs.citi.com/search-jobs/SetSearchRequestGeoLocation?lat=null&lon=null&IsUsingGeolocation=true&hasHtml5GeoError=false&geoType=ipambientonly"
     },
