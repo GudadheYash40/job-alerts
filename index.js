@@ -10,7 +10,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cron    = require("node-cron");
-const config  = require("./config/sources.json");
+const config  = require("./config/source.json");
 const state   = require("./engine/state");
 const { sendEmail } = require("./utils/mailer");
 
