@@ -30,6 +30,7 @@ const { fetchCiscoJobs }         = require("./fetchers/cisco");
 const { fetchDeepIntentJobs }    = require("./fetchers/deepintent");
 const { fetchStandardCharteredJobs } = require("./fetchers/standardchartered");
 const { fetchWalmartJobs }       = require("./fetchers/walmart");
+const { fetchcitibankJobs }       = require("./fetchers/citibank");
 
 // ── Fetcher map — name must match "name" in source.json ───────────────────────
 const FETCHERS = {
@@ -45,6 +46,7 @@ const FETCHERS = {
     deepintent:    (url) => fetchDeepIntentJobs(url),
     standardchartered : (url) => fetchStandardCharteredJobs(url),
     walmart:       (url) => fetchWalmartJobs(url),
+    citibank:       (url) => fetchCitibankJobs(url),
     // ── ADD NEW COMPANIES BELOW ───────────────────────────────────────────────
 };
 
