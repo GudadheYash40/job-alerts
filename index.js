@@ -30,7 +30,7 @@ const { fetchCiscoJobs }         = require("./fetchers/cisco");
 const { fetchDeepIntentJobs }    = require("./fetchers/deepintent");
 const { fetchStandardCharteredJobs } = require("./fetchers/standardchartered");
 const { fetchWalmartJobs }       = require("./fetchers/walmart");
-const { fetchcitiJobs }       = require("./fetchers/citi");
+const { fetchCitiJobs }       = require("./fetchers/citi");
 
 // ── Fetcher map — name must match "name" in source.json ───────────────────────
 const FETCHERS = {
