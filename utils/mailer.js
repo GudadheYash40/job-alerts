@@ -56,7 +56,7 @@ async function sendTelegram(message) {
 }
 
 // Split into chunks if too many jobs (Telegram has 4096 char limit)
-async function sendEmail(company, jobs) {
+async function sendEmail(company, label, jobs) {
     if (!jobs.length) return;
 
     try {
