@@ -1,48 +1,72 @@
 // engine/state.js
-// Uses Upstash Redis to store seen IDs permanently
-// Survives Render restarts, deploys, and sleep cycles
+// Local JSON file storage
+// FIRST RUN: silently stores all jobs, no alerts sent
+// SECOND RUN onwards: only new jobs trigger alerts
 
-const { Redis } = require("@upstash/redis");
+const fs   = require("fs/promises");
+const path = require("path");
 
-const redis = new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+const DATA_FILE  = path.join(__dirname, "../data/seen_jobs.json");
+const READY_FILE = path.join(__dirname, "../data/ready.flag");
 
-// Load seen IDs for a company from Redis
-async function loadState(company) {
-    try {
-        const ids = await redis.get(`seen_ids:${company}`);
-        return { seen_ids: ids || [] };
-    } catch (err) {
-        console.error(`Redis loadState error (${company}):`, err.message);
-        return { seen_ids: [] };
+async function ensureFile() {
+    await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
+    try { await fs.access(DATA_FILE); }
+    catch { await fs.writeFile(DATA_FILE, JSON.stringify({}), "utf-8"); }
+}
+
+async function readData() {
+    await ensureFile();
+    try { return JSON.parse(await fs.readFile(DATA_FILE, "utf-8")); }
+    catch { return {}; }
+}
+
+async function writeData(data) {
+    await ensureFile();
+    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+async function isFirstRun() {
+    try { await fs.access(READY_FILE); return false; }
+    catch { return true; }
+}
+
+async function markReady() {
+    await fs.mkdir(path.dirname(READY_FILE), { recursive: true });
+    await fs.writeFile(READY_FILE, new Date().toISOString(), "utf-8");
+    console.log("  [state] ✅ First run complete — alerts enabled from next run");
+}
+
+async function getSeenIds(company) {
+    const data = await readData();
+    return new Set((data[company] || []).map(id => String(id)));
+}
+
+async function markAsSeen(company, jobs) {
+    const data   = await readData();
+    const oldIds = data[company] || [];
+    const newIds = jobs.map(j => String(j.id));
+    data[company] = Array.from(new Set([...newIds, ...oldIds])).slice(0, 500);
+    await writeData(data);
+}
+
+async function logAlert(company, label, jobs) {
+    console.log(`  [state] Alert logged — ${label || company}: ${jobs.length} jobs`);
+}
+
+async function logRun(totalFetched, totalNew, durationMs, errors) {
+    console.log(`  [state] Run — fetched:${totalFetched} new:${totalNew} time:${durationMs}ms errors:${errors.length}`);
+}
+
+async function getDashboardData() {
+    const data          = await readData();
+    const companyCounts = {};
+    let   totalSeen     = 0;
+    for (const [company, ids] of Object.entries(data)) {
+        companyCounts[company] = ids.length;
+        totalSeen += ids.length;
     }
+    return { runs: [], alerts: [], companyCounts, totalSeen };
 }
 
-// Save seen IDs for a company to Redis
-async function saveState(company, state) {
-    try {
-        await redis.set(`seen_ids:${company}`, state.seen_ids);
-    } catch (err) {
-        console.error(`Redis saveState error (${company}):`, err.message);
-    }
-}
-
-// Merge new IDs into old — plain strings, deduped, capped at 500
-function updateSeenIds(oldIds, newIds, limit = 500) {
-    const normalized = [
-        ...newIds.map(id => String(id)),
-        ...oldIds.map(id => typeof id === "object" ? String(id.id) : String(id))
-    ];
-    return Array.from(new Set(normalized)).slice(0, limit);
-}
-
-// Build a Set for fast lookup
-function buildSeenSet(seenIds) {
-    return new Set(seenIds.map(id =>
-        typeof id === "object" ? String(id.id) : String(id)
-    ));
-}
-
-module.exports = { loadState, saveState, updateSeenIds, buildSeenSet };
+module.exports = { getSeenIds, markAsSeen, logAlert, logRun, getDashboardData, isFirstRun, markReady };
